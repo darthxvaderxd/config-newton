@@ -1,10 +1,14 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Config } from '../entity/config';
-import { Deployment } from "../entity/deployment";
-import { DeploymentKey } from "../entity/deployment-key";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Response } from "../types/types";
+import { Deployment } from '../entity/deployment';
+import { DeploymentKey } from '../entity/deployment-key';
+import { Response } from '../types/types';
 
 @Injectable()
 export class ConfigService {
@@ -47,14 +51,18 @@ export class ConfigService {
     const deployment = await this.deploymentRepository.findOne({
       name,
     });
-    if (deployment && !deployment.secured) { // if it is not set to secured we do not need a key
+    if (deployment && !deployment.secured) {
+      // if it is not set to secured we do not need a key
       return deployment;
-    } else if (deployment?.secured) { // required to validate the deployment key
+    }
+    if (deployment?.secured) {
+      // required to validate the deployment key
       const deploymentKey = await this.deploymentKeyRepository.findOne({
         deployment_id: deployment.deployment_id,
         key: apiKey,
       });
-      if (deploymentKey) { // deployment key is valid
+      if (deploymentKey) {
+        // deployment key is valid
         return deployment;
       }
     }
@@ -70,29 +78,35 @@ export class ConfigService {
     const results = await this.configRepository.find({ deployment_id });
     return {
       results,
-    }
+    };
   }
 
   /**
-   * update all the configs sent in the request (note: this will not clean up old ones if key does not exist)
+   * update all the configs sent in the request
+   * note: this will not clean up old ones if key
+   * does not exist
    * @param deployment
    * @param body
    */
-  async updateConfigForDeployment(deployment: Deployment, body: object): Promise<Response> {
+  async updateConfigForDeployment(
+    deployment: Deployment,
+    body: object,
+  ): Promise<Response> {
     const { deployment_id } = deployment;
     const keys = Object.keys(body);
     try {
       for (let i = 0; i < keys.length; i += 1) {
         const key = keys[i];
         const value = body[key];
-        await this.saveConfig(deployment_id, key, value);
+        // eslint-disable-next-line no-await-in-loop
+        await this.saveConfig(deployment_id, key, value); // shh this is our secret
       }
     } catch (error) {
       throw new BadRequestException({
         error,
       });
     }
-    const results = await this.configRepository.find({ deployment_id })
+    const results = await this.configRepository.find({ deployment_id });
     return {
       results,
     };
@@ -103,7 +117,10 @@ export class ConfigService {
    * @param deployment
    * @param key
    */
-  async getDeploymentConfig(deployment: Deployment, key: string): Promise<Response> {
+  async getDeploymentConfig(
+    deployment: Deployment,
+    key: string,
+  ): Promise<Response> {
     const { deployment_id } = deployment;
     const results = await this.configRepository.findOne({
       deployment_id,
@@ -116,7 +133,7 @@ export class ConfigService {
     }
     return {
       results,
-    }
+    };
   }
 
   /**
@@ -138,6 +155,6 @@ export class ConfigService {
     });
     return {
       results,
-    }
+    };
   }
 }

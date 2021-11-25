@@ -3,22 +3,30 @@ import {
   Body,
   Controller,
   Get,
-  Headers, NotFoundException,
-  Param, Post
-} from "@nestjs/common";
+  Headers,
+  NotFoundException,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { ConfigService } from './config.service';
-import { ConfigRequest, Response } from "../types/types";
-import { Deployment } from "../entity/deployment";
+import { ConfigRequest, Response } from '../types/types';
+import { Deployment } from '../entity/deployment';
 
 // /configs
 @Controller('configs')
 export class ConfigController {
   constructor(private readonly service: ConfigService) {}
 
-  private async getDeployment(headers, params: ConfigRequest): Promise<Deployment> {
+  private async getDeployment(
+    headers,
+    params: ConfigRequest,
+  ): Promise<Deployment> {
     const { deployment: deploymentName } = params;
     const { 'x-api-key': apiKey = '' } = headers;
-    const deployment = await this.service.validateDeployment(apiKey, deploymentName);
+    const deployment = await this.service.validateDeployment(
+      apiKey,
+      deploymentName,
+    );
     if (deployment) {
       return deployment;
     }
@@ -29,7 +37,10 @@ export class ConfigController {
 
   // GET /configs/:deployment
   @Get(':deployment')
-  async getConfigsForDeployment(@Headers() headers, @Param() params: ConfigRequest): Promise<Response> {
+  async getConfigsForDeployment(
+    @Headers() headers,
+      @Param() params: ConfigRequest,
+  ): Promise<Response> {
     const deployment = await this.getDeployment(headers, params);
     return this.service.getDeployment(deployment);
   }
@@ -38,8 +49,8 @@ export class ConfigController {
   @Post(':deployment')
   async updateConfigForDeployment(
     @Headers() headers,
-    @Param() params: ConfigRequest,
-    @Body() body,
+      @Param() params: ConfigRequest,
+      @Body() body,
   ): Promise<Response> {
     const deployment = await this.getDeployment(headers, params);
     if (typeof body === 'object') {
@@ -52,7 +63,10 @@ export class ConfigController {
 
   // GET /configs/:deployment/:key
   @Get(':deployment/:key')
-  async getConfigForDeploymentWithConfig(@Headers() headers, @Param() params: ConfigRequest): Promise<Response> {
+  async getConfigForDeploymentWithConfig(
+    @Headers() headers,
+      @Param() params: ConfigRequest,
+  ): Promise<Response> {
     const deployment = await this.getDeployment(headers, params);
     const { key } = params;
     return this.service.getDeploymentConfig(deployment, key);
@@ -62,8 +76,8 @@ export class ConfigController {
   @Post(':deployment/:key')
   async updateConfigForDeploymentWithConfig(
     @Headers() headers,
-    @Param() params: ConfigRequest,
-    @Body() body,
+      @Param() params: ConfigRequest,
+      @Body() body,
   ): Promise<Response> {
     const deployment = await this.getDeployment(headers, params);
     const { key } = params;

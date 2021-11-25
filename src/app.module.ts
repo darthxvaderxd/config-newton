@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigController } from "./config/config.controller";
-import { ConfigService } from "./config/config.service";
-import { Config } from "./entity/config";
-import { Deployment } from "./entity/deployment";
-import { DeploymentKey } from "./entity/deployment-key";
+import { ConfigController } from './config/config.controller';
+import { ConfigService } from './config/config.service';
+import { Config } from './entity/config';
+import { Deployment } from './entity/deployment';
+import { DeploymentKey } from './entity/deployment-key';
 
 @Module({
   imports: [

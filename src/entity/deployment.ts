@@ -1,17 +1,13 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn
-} from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Deployment {
   @PrimaryGeneratedColumn()
-  deployment_id: number;
+    deployment_id: number;
 
   @Column()
-  name: string;
+    name: string;
 
   @Column({ default: false })
-  secured: boolean;
+    secured: boolean;
 }
