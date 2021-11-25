@@ -20,7 +20,11 @@ services:
 
   config-newton:
     build: .
+    volumes:
+    - ./:/app
     ports:
       - "3200:3200"
     depends_on:
       - db
+    environment:
+      MYSQL_HOST: db

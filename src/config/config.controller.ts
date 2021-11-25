@@ -10,6 +10,7 @@ import { ConfigService } from './config.service';
 import { ConfigRequest, Response } from "../types/types";
 import { Deployment } from "../entity/deployment";
 
+// /configs
 @Controller('configs')
 export class ConfigController {
   constructor(private readonly service: ConfigService) {}
@@ -26,12 +27,14 @@ export class ConfigController {
     });
   }
 
+  // GET /configs/:deployment
   @Get(':deployment')
   async getConfigsForDeployment(@Headers() headers, @Param() params: ConfigRequest): Promise<Response> {
     const deployment = await this.getDeployment(headers, params);
     return this.service.getDeployment(deployment);
   }
 
+  // POST /configs/:deployment
   @Post(':deployment')
   async updateConfigForDeployment(
     @Headers() headers,
@@ -47,6 +50,7 @@ export class ConfigController {
     });
   }
 
+  // GET /configs/:deployment/:key
   @Get(':deployment/:key')
   async getConfigForDeploymentWithConfig(@Headers() headers, @Param() params: ConfigRequest): Promise<Response> {
     const deployment = await this.getDeployment(headers, params);
@@ -54,6 +58,7 @@ export class ConfigController {
     return this.service.getDeploymentConfig(deployment, key);
   }
 
+  // POST /configs/:deployment/:key
   @Post(':deployment/:key')
   async updateConfigForDeploymentWithConfig(
     @Headers() headers,

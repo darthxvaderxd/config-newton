@@ -17,6 +17,13 @@ export class ConfigService {
     private deploymentKeyRepository: Repository<DeploymentKey>,
   ) {}
 
+  /**
+   * save the config, create a new one if it doesn't exist
+   * @param deployment_id
+   * @param key - the key name ie: MYSQL_HOST
+   * @param value - the value we want stored ie: db
+   * @private
+   */
   private async saveConfig(deployment_id, key, value) {
     let config = await this.configRepository.findOne({
       deployment_id,
@@ -54,6 +61,10 @@ export class ConfigService {
     return null;
   }
 
+  /**
+   * fetch all configs for a given deployment
+   * @param deployment
+   */
   async getDeployment(deployment: Deployment): Promise<Response> {
     const { deployment_id } = deployment;
     const results = await this.configRepository.find({ deployment_id });
@@ -62,6 +73,11 @@ export class ConfigService {
     }
   }
 
+  /**
+   * update all the configs sent in the request (note: this will not clean up old ones if key does not exist)
+   * @param deployment
+   * @param body
+   */
   async updateConfigForDeployment(deployment: Deployment, body: object): Promise<Response> {
     const { deployment_id } = deployment;
     const keys = Object.keys(body);
@@ -82,6 +98,11 @@ export class ConfigService {
     };
   }
 
+  /**
+   * get a specific configuration for a deployment for a given key
+   * @param deployment
+   * @param key
+   */
   async getDeploymentConfig(deployment: Deployment, key: string): Promise<Response> {
     const { deployment_id } = deployment;
     const results = await this.configRepository.findOne({
@@ -98,6 +119,12 @@ export class ConfigService {
     }
   }
 
+  /**
+   * update / create a specific config for a deployment
+   * @param deployment
+   * @param key
+   * @param value
+   */
   async updateConfigForDeploymentConfig(
     deployment: Deployment,
     key: string,
