@@ -5,7 +5,7 @@ COPY . .
 RUN yarn install
 RUN npm run build
 
-#CMD [ "npm run start:prod" ]
-CMD [ "npm run start:dev" ]
+CMD [ "npm run start:prod" ]
+
 ENTRYPOINT [ "sh", "-c" ]
 EXPOSE 3200

@@ -28,17 +28,14 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+
+# using docker
+docker-compose up
 ```
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
+| path                      | method | description                                                           | headers                     | body                                                                           |
+|---------------------------|--------|-----------------------------------------------------------------------|-----------------------------|--------------------------------------------------------------------------------|
+| /configs/:deployment      | get    | get all of the configuration settings for a deployment / environment  | x-api-key (may be required) | no                                                                             |
+| /configs/:deployment/:key | get    | get a specific configuration setting for a deployment / environment   | x-api-key (may be required) | no                                                                             |
+| /configs/:deployment      | post   | update / create configuration settings for a deployment / environment | x-api-key (may be required) | yes post key pair values as object ie : `{ "message": "hello", "foo": "bar" }` |
+| /configs/:deployment/:key | post   | update / create configuration setting for a deployment / environment  | x-api-key (may be required) | yes post object with value ie : `{ "value": "updated config" }`                |

@@ -28,3 +28,4 @@ services:
       - db
     environment:
       MYSQL_HOST: db
+#    command: yarn start
