@@ -1,8 +1,10 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   Headers, NotFoundException,
-  Param
+  Param, Post
 } from "@nestjs/common";
 import { ConfigService } from './config.service';
 import { ConfigRequest, Response } from "../types/types";
@@ -12,32 +14,55 @@ import { Deployment } from "../entity/deployment";
 export class ConfigController {
   constructor(private readonly service: ConfigService) {}
 
-  private getDeployment(headers, params: ConfigRequest): Promise<Deployment> {
+  private async getDeployment(headers, params: ConfigRequest): Promise<Deployment> {
     const { deployment: deploymentName } = params;
     const { 'x-api-key': apiKey = '' } = headers;
-    return this.service.validateDeployment(apiKey, deploymentName);
+    const deployment = await this.service.validateDeployment(apiKey, deploymentName);
+    if (deployment) {
+      return deployment;
+    }
+    throw new NotFoundException({
+      error: 'invalid deployment',
+    });
   }
 
   @Get(':deployment')
   async getConfigsForDeployment(@Headers() headers, @Param() params: ConfigRequest): Promise<Response> {
     const deployment = await this.getDeployment(headers, params);
-    if (deployment) {
-      return this.service.getDeployment(deployment);
+    return this.service.getDeployment(deployment);
+  }
+
+  @Post(':deployment')
+  async updateConfigForDeployment(
+    @Headers() headers,
+    @Param() params: ConfigRequest,
+    @Body() body,
+  ): Promise<Response> {
+    const deployment = await this.getDeployment(headers, params);
+    if (typeof body === 'object') {
+      return this.service.updateConfigForDeployment(deployment, body);
     }
-    throw new NotFoundException({
-      error: 'invalid deployment',
+    throw new BadRequestException({
+      error: 'invalid body in post',
     });
   }
 
   @Get(':deployment/:key')
   async getConfigForDeploymentWithConfig(@Headers() headers, @Param() params: ConfigRequest): Promise<Response> {
     const deployment = await this.getDeployment(headers, params);
-    if (deployment) {
-      const { key } = params;
-      return this.service.getDeploymentConfig(deployment, key);
-    }
-    throw new NotFoundException({
-      error: 'invalid deployment',
-    });
+    const { key } = params;
+    return this.service.getDeploymentConfig(deployment, key);
+  }
+
+  @Post(':deployment/:key')
+  async updateConfigForDeploymentWithConfig(
+    @Headers() headers,
+    @Param() params: ConfigRequest,
+    @Body() body,
+  ): Promise<Response> {
+    const deployment = await this.getDeployment(headers, params);
+    const { key } = params;
+    const { value } = body;
+    return this.service.updateConfigForDeploymentConfig(deployment, key, value);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { Repository } from 'typeorm';
 import { Config } from '../entity/config';
 import { Deployment } from "../entity/deployment";
@@ -16,6 +16,20 @@ export class ConfigService {
     @InjectRepository(DeploymentKey)
     private deploymentKeyRepository: Repository<DeploymentKey>,
   ) {}
+
+  private async saveConfig(deployment_id, key, value) {
+    let config = await this.configRepository.findOne({
+      deployment_id,
+      key,
+    });
+    if (!config) {
+      config = new Config();
+      config.key = key;
+      config.deployment_id = deployment_id;
+    }
+    config.value = value;
+    return this.configRepository.save(config);
+  }
 
   /**
    * ensure that the deployment key is valid for given environment
@@ -42,20 +56,59 @@ export class ConfigService {
 
   async getDeployment(deployment: Deployment): Promise<Response> {
     const { deployment_id } = deployment;
-    const results = await this.configRepository.find({ deployment_id })
+    const results = await this.configRepository.find({ deployment_id });
     return {
       results,
     }
   }
 
+  async updateConfigForDeployment(deployment: Deployment, body: object): Promise<Response> {
+    const { deployment_id } = deployment;
+    const keys = Object.keys(body);
+    try {
+      for (let i = 0; i < keys.length; i += 1) {
+        const key = keys[i];
+        const value = body[key];
+        await this.saveConfig(deployment_id, key, value);
+      }
+    } catch (error) {
+      throw new BadRequestException({
+        error,
+      });
+    }
+    const results = await this.configRepository.find({ deployment_id })
+    return {
+      results,
+    };
+  }
+
   async getDeploymentConfig(deployment: Deployment, key: string): Promise<Response> {
     const { deployment_id } = deployment;
-    const results = await this.configRepository.findOne({ deployment_id, key });
+    const results = await this.configRepository.findOne({
+      deployment_id,
+      key,
+    });
     if (!results) {
       throw new NotFoundException({
         error: 'invalid config',
       });
     }
+    return {
+      results,
+    }
+  }
+
+  async updateConfigForDeploymentConfig(
+    deployment: Deployment,
+    key: string,
+    value: string,
+  ): Promise<Response> {
+    const { deployment_id } = deployment;
+    await this.saveConfig(deployment_id, key, value);
+    const results = await this.configRepository.findOne({
+      deployment_id,
+      key,
+    });
     return {
       results,
     }
