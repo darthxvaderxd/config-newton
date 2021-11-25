@@ -1,0 +1,26 @@
+version: '3.3'
+volumes:
+  db:
+    driver:
+      local
+services:
+  db:
+    image: mysql/mysql-server:latest
+    environment:
+      MYSQL_DATABASE: config_newton
+      MYSQL_USER: cfn
+      MYSQL_PASSWORD: catgifs
+    volumes:
+      - "./data:/docker-entrypoint-initdb.d"
+      - "db:/var/lib/mysql"
+    command: |
+      mysqld --init-file /docker-entrypoint-initdb.d/db.sql
+    ports:
+      - "3306:3306"
+
+  config-newton:
+    build: .
+    ports:
+      - "3200:3200"
+    depends_on:
+      - db
