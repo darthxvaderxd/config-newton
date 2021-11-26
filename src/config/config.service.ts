@@ -47,7 +47,7 @@ export class ConfigService {
    * @param apiKey - the key given in the request headers
    * @param name - the name of the deployment we are validating against
    */
-  async validateDeployment(apiKey: string, name: string): Promise<Deployment> {
+  async validateDeployment(apiKey: string, name: string): Promise<Deployment | null> {
     const deployment = await this.deploymentRepository.findOne({
       name,
     });
