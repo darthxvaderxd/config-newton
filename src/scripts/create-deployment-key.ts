@@ -1,38 +1,29 @@
-import  { getConnection } from "./util/connection";
-import { Deployment } from "../entity/deployment";
+import { getConnection } from "./util/connection";
 import { createDeploymentKey } from "./util/create-deployment-key";
+import { getDeployment } from "./util/get-deployment";
 
 const run = async () => {
   const deploymentName = process?.argv[2]?.toLowerCase() ?? '';
-  const secure = process.argv[3].toLowerCase() ?? '';
 
   if (deploymentName === '') {
     throw new Error('Deployment was empty')
   }
 
   const connection = await getConnection();
-  const deploymentRepository = connection.getRepository(Deployment);
-  const deploymentCheck = await deploymentRepository.findOne({
-    name: deploymentName,
-  });
+  const deployment = await getDeployment(connection, deploymentName);
 
-  if (deploymentCheck) {
+  if (!deployment) {
     await connection.close();
-    throw new Error('Deployment already exists');
+    throw new Error('Deployment does not exist');
   }
-
-  const deployment = new Deployment();
-  deployment.name = deploymentName;
-  deployment.secured = secure === 'y';
-
-  await deploymentRepository.save(deployment);
-
-  console.log('deployment created => ', deployment);
 
   if (deployment.secured) {
     const deploymentKey = await createDeploymentKey(connection, deployment);
     console.log('deployment key created => ', deploymentKey.key);
+  } else {
+    console.log('deployment is not secured, no key needed');
   }
+
   await connection.close();
 };
 
