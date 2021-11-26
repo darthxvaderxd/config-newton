@@ -12,7 +12,7 @@ services:
       MYSQL_PASSWORD: catgifs
     volumes:
       - "./data:/docker-entrypoint-initdb.d"
-      - "db:/var/lib/mysql"
+      - "db:/var/util/mysql"
     command: |
       mysqld --init-file /docker-entrypoint-initdb.d/db.sql
     ports:
@@ -28,4 +28,4 @@ services:
       - db
     environment:
       MYSQL_HOST: db
-#    command: yarn start
+    command: "'npm run start:dev'"
