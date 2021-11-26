@@ -1,11 +1,11 @@
-import { getConnection } from "./util/connection";
-import { getDeployment } from "./util/get-deployment";
+import { getConnection } from './util/connection';
+import { getDeployment } from './util/get-deployment';
 
 const run = async () => {
   const deploymentName = process?.argv[2]?.toLowerCase() ?? '';
 
   if (deploymentName === '') {
-    throw new Error('Deployment was empty')
+    throw new Error('Deployment was empty');
   }
 
   const connection = await getConnection();

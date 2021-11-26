@@ -1,4 +1,4 @@
-import { Deployment } from "../../entity/deployment";
+import { Deployment } from '../../entity/deployment';
 
 export const getDeployment = async (connection, deploymentName) => {
   const deploymentRepository = connection.getRepository(Deployment);
@@ -11,4 +11,4 @@ export const getDeployment = async (connection, deploymentName) => {
   }
 
   return deployment;
-}
+};

@@ -1,7 +1,7 @@
-import {createConnection, Connection} from 'typeorm';
-import { Config } from "../../entity/config";
-import { Deployment } from "../../entity/deployment";
-import { DeploymentKey } from "../../entity/deployment-key";
+import { createConnection, Connection } from 'typeorm';
+import { Config } from '../../entity/config';
+import { Deployment } from '../../entity/deployment';
+import { DeploymentKey } from '../../entity/deployment-key';
 
 export const getConnection = () : Promise<Connection> => createConnection({
   type: 'mysql',

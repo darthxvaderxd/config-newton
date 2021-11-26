@@ -1,13 +1,13 @@
-import  { getConnection } from "./util/connection";
-import { Deployment } from "../entity/deployment";
-import { createDeploymentKey } from "./util/create-deployment-key";
+import { getConnection } from './util/connection';
+import { Deployment } from '../entity/deployment';
+import { createDeploymentKey } from './util/create-deployment-key';
 
 const run = async () => {
   const deploymentName = process?.argv[2]?.toLowerCase() ?? '';
   const secure = process.argv[3].toLowerCase() ?? '';
 
   if (deploymentName === '') {
-    throw new Error('Deployment was empty')
+    throw new Error('Deployment was empty');
   }
 
   const connection = await getConnection();
